@@ -1,3 +1,7 @@
+/* eslint-disable no-trailing-spaces */
+/* eslint-disable quotes */
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
@@ -5,113 +9,107 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import { useState } from 'react';
 import {
   SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
   Text,
-  useColorScheme,
+  StyleSheet,
+  Button,
+  Modal,
+  Pressable,
   View,
+  FlatList,
 } from 'react-native';
+import Formulario from './src/components/Formulario';
+import Paciente from './src/components/Paciente';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const App = () => {
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+  const [modal, setModal] = useState(false);
+  const [pacientes, setPacientes] = useState([]);
+  const [paciente, setPaciente] = useState({});
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  
+  const handleEditarPaciente = (id) =>{
+     
+    const pacienteEditado = pacientes.filter(pacienteState => pacienteState.id === id)[0];
+    setPaciente(pacienteEditado);
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.titulo}>Administrador de Citas {" "}
+        <Text style={styles.tituloBold}>Veterinaria</Text>
+      </Text>
+      <Pressable
+        style={styles.btnNuevaCita}
+        onPress={()=>setModal(!modal)}>
+        <Text style={styles.txtNuevaCita}>Nueva cita</Text>
+      </Pressable>
+      <View>
+        {pacientes ? 
+          <FlatList
+            style={styles.listado}
+            data={pacientes}
+            keyExtractor={ (item) => item.id}
+            renderItem = {({item}) => {
+              return(
+              <Paciente item={item}
+                setModal={setModal}
+                modal={modal}
+                handleEditarPaciente={handleEditarPaciente}
+              />
+              );
+            }}
+          />
+          :
+          <Text>No hay pacientes registrados.</Text>
+        }
+      </View>
+      <Formulario  
+        modal={modal}
+        setModal={setModal}
+        setPacientes={setPacientes}
+        pacientes={pacientes}
+        paciente={paciente}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    backgroundColor: "#F3F4F6",
+    flex: 1,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  titulo: {
+    textAlign: "center",
+    color: "#374151",
+    fontSize: 30,
+    fontWeight: "700",
   },
-  sectionDescription: {
-    marginTop: 8,
+  tituloBold: {
+    fontWeight: "900",
+    color: "#6D28D9",
+  },
+  btnNuevaCita: {
+    backgroundColor: "green",
+    padding: 20,
+    marginTop: 20,
+    marginHorizontal: 15,
+    borderRadius: 15,
+  },
+  txtNuevaCita:{
+    textAlign: "center",
+    color: "#FFF",
+    textTransform: "uppercase",
+    fontWeight: "900",
     fontSize: 18,
-    fontWeight: '400',
   },
-  highlight: {
-    fontWeight: '700',
+  listado: {
+    marginVertical: 15,
+    marginHorizontal: 20,
   },
 });
 
